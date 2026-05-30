@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Khaira Life Simulator</title>
+
+<style>
+body{
+    font-family: Arial, sans-serif;
+    background:#f7f7f7;
+    text-align:center;
+    padding:20px;
+}
+
+.card{
+    max-width:700px;
+    margin:auto;
+    background:white;
+    padding:20px;
+    border-radius:20px;
+    box-shadow:0 0 20px rgba(0,0,0,.1);
+}
+
+img{
+    width:250px;
+    border-radius:20px;
+}
+
+button{
+    padding:12px 20px;
+    margin:8px;
+    border:none;
+    border-radius:12px;
+    cursor:pointer;
+    font-size:16px;
+}
+
+.choice{
+    background:#222;
+    color:white;
+}
+
+#time{
+    font-size:25px;
+    font-weight:bold;
+    margin-bottom:10px;
+}
+
+#status{
+    margin-top:10px;
+    color:#666;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+
+<h1>🌸 Khaira Life Simulator 🌸</h1>
+
+<div id="time"></div>
+
+<img id="character" src="happy.png">
+
+<h2 id="scene"></h2>
+
+<div id="choices"></div>
+
+<div id="status"></div>
+
+</div>
+
+<script>
+
+let state = {
+    hour:5,
+    energy:100,
+    late:false,
+    sleptAt:22
+};
+
+function updateScene(){
+
+const scene = document.getElementById("scene");
+const choices = document.getElementById("choices");
+const time = document.getElementById("time");
+const status = document.getElementById("status");
+
+choices.innerHTML="";
+
+time.innerHTML = "🕒 Jam " + state.hour + ".00";
+
+status.innerHTML =
+"⚡ Energi : " + state.energy +
+"<br>📚 Status Telat : " + (state.late ? "YA" : "Tidak");
+
+if(state.hour===5){
+
+scene.innerHTML="Alarm berbunyi... Khaira bangun pagi.";
+
+addChoice("🚿 Mandi dan siap sekolah",()=>{
+state.hour=6;
+updateScene();
+});
+
+addChoice("😴 Tidur lagi",()=>{
+state.hour=6;
+state.energy+=10;
+updateScene();
+});
+}
+
+else if(state.hour===6){
+
+scene.innerHTML="Saatnya bersiap ke sekolah.";
+
+addChoice("🎒 Berangkat sekolah",()=>{
+state.hour=7;
+if(state.energy>100) state.late=true;
+updateScene();
+});
+}
+
+else if(state.hour===7){
+
+if(state.late){
+scene.innerHTML="😭 Khaira telat datang ke sekolah!";
+document.getElementById("character").src="sad.png";
+}
+else{
+scene.innerHTML="✨ Khaira datang tepat waktu.";
+document.getElementById("character").src="happy.png";
+}
+
+addChoice("Masuk kelas",()=>{
+state.hour=10;
+updateScene();
+});
+}
+
+else if(state.hour===10){
+
+scene.innerHTML="🍱 Waktu makan MBG yay";
+
+addChoice("Makan",()=>{
+state.energy+=10;
+state.hour=12;
+updateScene();
+});
+}
+
+else if(state.hour===12){
+
+scene.innerHTML="🕌 Sholat Dzuhur di sekolah";
+
+addChoice("Sholat",()=>{
+state.hour=15;
+updateScene();
+});
+}
+
+else if(state.hour===15){
+
+scene.innerHTML="🏠 Pulang ke rumah";
+
+addChoice("Lanjut",()=>{
+state.hour=16;
+updateScene();
+});
+}
+
+else if(state.hour===16){
+
+scene.innerHTML="🌤️ Waktu bebas.";
+
+addChoice("📚 Belajar",()=>{
+state.energy-=10;
+state.hour=18;
+updateScene();
+});
+
+addChoice("🎮 Main Roblox",()=>{
+state.energy-=5;
+state.hour=18;
+updateScene();
+});
+
+addChoice("😴 Tidur sore",()=>{
+state.energy+=20;
+state.hour=18;
+updateScene();
+});
+}
+
+else if(state.hour===18){
+
+scene.innerHTML="🍽️ Makan malam dan istirahat.";
+
+addChoice("Lanjut",()=>{
+state.hour=19;
+updateScene();
+});
+}
+
+else if(state.hour===19){
+
+scene.innerHTML="🎮 Main Roblox malam.";
+
+addChoice("Main sampai jam 22",()=>{
+state.hour=22;
+updateScene();
+});
+}
+
+else if(state.hour===22){
+
+scene.innerHTML="🌙 Saatnya siap tidur.";
+
+addChoice("😴 Tidur",()=>{
+goodEnding();
+});
+
+addChoice("📱 Bergadang",()=>{
+state.hour=23;
+updateScene();
+});
+}
+
+else if(state.hour===23){
+
+scene.innerHTML="👀 Masih terjaga...";
+
+addChoice("Tidur sekarang",()=>{
+normalEnding();
+});
+
+addChoice("Lanjut bergadang",()=>{
+state.hour=1;
+updateScene();
+});
+}
+
+else if(state.hour===1){
+
+scene.innerHTML="⚠️ Sudah sangat malam.";
+
+addChoice("Tidur",()=>{
+badEnding();
+});
+}
+
+}
+
+function addChoice(text,action){
+
+let btn=document.createElement("button");
+
+btn.className="choice";
+btn.innerHTML=text;
+btn.onclick=action;
+
+document.getElementById("choices").appendChild(btn);
+}
+
+function goodEnding(){
+
+document.getElementById("scene").innerHTML=
+"🌟 GOOD ENDING<br><br>Khaira tidur tepat waktu dan bangun segar untuk hari berikutnya.";
+
+document.getElementById("choices").innerHTML="";
+document.getElementById("character").src="happy.png";
+}
+
+function normalEnding(){
+
+document.getElementById("scene").innerHTML=
+"🙂 NORMAL ENDING<br><br>Masih cukup istirahat, tapi besok agak mengantuk.";
+
+document.getElementById("choices").innerHTML="";
+}
+
+function badEnding(){
+
+document.getElementById("scene").innerHTML=
+"💀 BAD ENDING<br><br>Khaira bergadang sampai larut. Besok ngantuk saat sekolah.";
+
+document.getElementById("choices").innerHTML="";
+document.getElementById("character").src="sad.png";
+}
+
+updateScene();
+
+</script>
+
+</body>
+</html>
